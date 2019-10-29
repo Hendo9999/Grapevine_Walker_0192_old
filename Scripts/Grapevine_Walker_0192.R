@@ -769,3 +769,75 @@ bulk_r3b5 <- raw_r3b5_grape_st %>%
 
 
 ##Note: r3b5 is last rep_batch for this experiment
+
+
+
+####Process chloride data
+
+#assign primary data files to variables
+
+
+#files with chloride data for each replicate & batch
+#import rows from specific sheets with chloride data for samples only (not standards)
+#Biological replicate #1, sample batches #1 - #6, rows with pertinent data
+raw_r1b1 <- read_xlsx("Data/3&4. 0192 barcodes (LAM)-BIOMASS.REP1.xlsx", sheet = 9, n_max = 45) %>%
+  clean_names() %>% #replaces spaces and removes symbols from column names
+  select(-c(2, 3, 4, 5, 18, 19, 22, 23, 26, 27, 28)) %>% #remove columns with analyses or duplicated info
+  dplyr::rename(rep = rep_10, smarthouse = smarthouse_2, cl_rep1_reading = cl_r1_read, cl_rep_2_reading = cl_r2_read, 
+                vial_number_1 = chloride_number_29, vial_number_2 = chloride_number_30) %>% #rename columns with variant names, need to force through dplyr because of plyr issue
+  mutate("cl_rep1_reading_adj" =  as.numeric(cl_rep1_reading) - mean(c_r1b1), "cl_rep2_reading_adj" = as.numeric(cl_rep_2_reading) - mean(c_r1b1)) %>%
+  mutate("cl_%_dry_weight_rep1" = (cl_rep1_reading_adj * cf_r1b1[1,1] * 35.5) / (as.numeric(cl_rep1_wt_mg) * 10),
+         "cl_%_dry_weight_rep2" = (cl_rep2_reading_adj * cf_r1b1[1,1] * 35.5) / (as.numeric(cl_rep2_wt_mg) * 10))
+raw_r1b1$rep_batch="r1b1" #add assay batch info
+
+
+raw_r1b2 <- read_xlsx("Data/3&4. 0192 barcodes (LAM)-BIOMASS.REP1.xlsx", sheet = 10, n_max = 44) %>%
+  clean_names() %>% #replaces spaces and removes symbols from column names
+  select(-c(2, 3, 4, 5, 18, 19, 22, 23, 26, 27, 28)) %>% #remove columns with analyses or duplicated info
+  dplyr::rename(rep = rep_10, smarthouse = smarthouse_2, 
+                cl_rep1_reading = cl_r1_read, cl_rep_2_reading = cl_r2_read) %>% #rename columns with variant names, need to force through dplyr because of plyr issue
+  mutate("cl_rep1_reading_adj" =  as.numeric(cl_rep1_reading) - mean(c_r1b2), "cl_rep2_reading_adj" = as.numeric(cl_rep_2_reading) - mean(c_r1b2)) %>%
+  mutate("cl_%_dry_weight_rep1" = (cl_rep1_reading_adj * cf_r1b2[1,1] * 35.5) / (as.numeric(cl_rep1_wt_mg) * 10),
+         "cl_%_dry_weight_rep2" = (cl_rep2_reading_adj * cf_r1b2[1,1] * 35.5) / (as.numeric(cl_rep2_wt_mg) * 10))
+raw_r1b2$rep_batch="r1b2" #add assay batch info
+
+
+raw_r1b3 <- read_xlsx("Data/3&4. 0192 barcodes (LAM)-BIOMASS.REP1.xlsx", sheet = 12, n_max = 43) %>%
+  clean_names() %>% #replaces spaces and removes symbols from column names
+  select(-c(14, 15, 18, 19, 22, 23, 24)) %>% #remove columns with analyses or duplicated info
+  dplyr::rename(rep = rep_6, cl_rep1_reading = cl_r1_read, cl_rep_2_reading = cl_r2_read) %>% #rename columns with variant names, need to force through dplyr because of plyr issue
+  mutate("cl_rep1_reading_adj" =  as.numeric(cl_rep1_reading) - mean(c_r1b3), "cl_rep2_reading_adj" = as.numeric(cl_rep_2_reading) - mean(c_r1b3)) %>%
+  mutate("cl_%_dry_weight_rep1" = (cl_rep1_reading_adj * cf_r1b3[1,1] * 35.5) / (as.numeric(cl_rep1_wt_mg) * 10),
+         "cl_%_dry_weight_rep2" = (cl_rep2_reading_adj * cf_r1b3[1,1] * 35.5) / (as.numeric(cl_rep2_wt_mg) * 10))
+raw_r1b3$rep_batch="r1b3" #add assay batch info
+
+
+raw_r1b4 <- read_xlsx("Data/3&4. 0192 barcodes (LAM)-BIOMASS.REP1.xlsx", sheet = 14, n_max = 41) %>%
+  clean_names() %>% #replaces spaces and removes symbols from column names
+  select(-c(14, 15, 18, 19, 22, 23, 24)) %>% #remove columns with analyses or duplicated info
+  dplyr::rename(rep = rep_6, cl_rep1_reading = cl_r1_read, cl_rep_2_reading = cl_r2_read) %>% #rename columns with variant names, need to force through dplyr because of plyr issue
+  mutate("cl_rep1_reading_adj" =  as.numeric(cl_rep1_reading) - mean(c_r1b4), "cl_rep2_reading_adj" = as.numeric(cl_rep_2_reading) - mean(c_r1b4)) %>%
+  mutate("cl_%_dry_weight_rep1" = (cl_rep1_reading_adj * cf_r1b4[1,1] * 35.5) / (as.numeric(cl_rep1_wt_mg) * 10),
+         "cl_%_dry_weight_rep2" = (cl_rep2_reading_adj * cf_r1b4[1,1] * 35.5) / (as.numeric(cl_rep2_wt_mg) * 10))
+raw_r1b4$rep_batch="r1b4" #add assay batch info
+
+
+raw_r1b5 <- read_xlsx("Data/3&4. 0192 barcodes (LAM)-BIOMASS.REP1.xlsx", sheet = 18, n_max = 48) %>%
+  clean_names() %>% #replaces spaces and removes symbols from column names
+  select(-c(16, 17, 20, 21, 22)) %>% #remove columns with analyses or duplicated info
+  dplyr::rename(cl_rep1_reading = cl_r1_read, cl_rep_2_reading = cl_r2_read) %>% #rename columns with variant names, need to force through dplyr because of plyr issue
+  mutate("cl_rep1_reading_adj" =  as.numeric(cl_rep1_reading) - mean(c_r1b5), "cl_rep2_reading_adj" = as.numeric(cl_rep_2_reading) - mean(c_r1b5)) %>%
+  mutate("cl_%_dry_weight_rep1" = (cl_rep1_reading_adj * cf_r1b5[1,1] * 35.5) / (as.numeric(cl_rep1_wt_mg) * 10),
+         "cl_%_dry_weight_rep2" = (cl_rep2_reading_adj * cf_r1b5[1,1] * 35.5) / (as.numeric(cl_rep2_wt_mg) * 10))
+raw_r1b5$rep_batch="r1b5" #add assay batch info
+
+
+raw_r1b6 <- read_xlsx("Data/3&4. 0192 barcodes (LAM)-BIOMASS.REP1.xlsx", sheet = 20, n_max = 30) %>%
+  clean_names() %>% #replaces spaces and removes symbols from column names
+  select(-c(16, 17, 20, 21, 22)) %>% #remove columns with analyses or duplicated info
+  dplyr::rename(cl_rep1_reading = cl_r1_read, cl_rep_2_reading = cl_r2_read) %>% #rename columns with variant names, need to force through dplyr because of plyr issue
+  mutate("cl_rep1_reading_adj" =  as.numeric(cl_rep1_reading) - mean(c_r1b6), "cl_rep2_reading_adj" = as.numeric(cl_rep_2_reading) - mean(c_r1b6)) %>%
+  mutate("cl_%_dry_weight_rep1" = (cl_rep1_reading_adj * cf_r1b6[1,1] * 35.5) / (as.numeric(cl_rep1_wt_mg) * 10),
+         "cl_%_dry_weight_rep2" = (cl_rep2_reading_adj * cf_r1b6[1,1] * 35.5) / (as.numeric(cl_rep2_wt_mg) * 10))
+raw_r1b6$rep_batch="r1b6"#add assay batch info
+
