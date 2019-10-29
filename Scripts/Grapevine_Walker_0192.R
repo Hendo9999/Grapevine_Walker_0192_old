@@ -985,3 +985,19 @@ chloride_1_data$cl_read_rep1 <- as.numeric(as.character(chloride_1_data$cl_read_
 chloride_1_data$cl_read_rep2 <- as.numeric(as.character(chloride_1_data$cl_read_rep2))          
 
 
+
+#add harvester data
+raw_harvester <- read_xlsx("Data/0192 Mature laminae chloride summary with harvester info.xlsx") %>% 
+  clean_names() %>% 
+  select(code, harvester) 
+chloride_data_harv <- left_join(chloride_1_data, raw_harvester, by="code") 
+
+
+#add laminae sampling weight data
+raw_laminae <- read_xlsx("Data/0192 Mature Laminae dry wts.xlsx") %>% 
+  clean_names() %>%
+  dplyr::rename(laminae_sample_weight = dry_wt_lam_ion) %>% 
+  select(code, laminae_sample_weight)
+chloride_data_harv_lam <- left_join(chloride_data_harv, raw_laminae, by="code")
+chloride_data_harv_lam$laminae_sample_weight <- as.numeric(as.character(chloride_data_harv_lam$laminae_sample_weight))
+
