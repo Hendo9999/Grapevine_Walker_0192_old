@@ -1001,3 +1001,14 @@ raw_laminae <- read_xlsx("Data/0192 Mature Laminae dry wts.xlsx") %>%
 chloride_data_harv_lam <- left_join(chloride_data_harv, raw_laminae, by="code")
 chloride_data_harv_lam$laminae_sample_weight <- as.numeric(as.character(chloride_data_harv_lam$laminae_sample_weight))
 
+
+##Dataframe with means of technical replicate measurements (dataframe is tidy)
+
+chloride_data_harv_lam_mean <- chloride_data_harv_lam %>% 
+  mutate("cl_reading_adj_mean" = rowMeans(select(chloride_1_data, cl_read_adj_rep1, cl_read_adj_rep2))) %>% 
+  mutate("cl_sampling_weight_mg_mean" = rowMeans(select(chloride_1_data, cl_sample_weight_mg_rep1, cl_sample_weight_mg_rep2))) %>% 
+  mutate("cl_dry_weight_calc_mean" = rowMeans(select(chloride_1_data, cl_dry_weight_calc_rep1, cl_dry_weight_calc_rep2))) %>% 
+  select(-c(vial_number_1, vial_number_2, cl_sample_weight_mg_rep1,cl_sample_weight_mg_rep2, cl_read_rep1, cl_read_rep2, cl_read_adj_rep1, cl_read_adj_rep2, cl_dry_weight_calc_rep1, cl_dry_weight_calc_rep2))
+
+
+
