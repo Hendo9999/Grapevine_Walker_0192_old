@@ -998,7 +998,7 @@ raw_laminae <- read_xlsx("Data/0192 Mature Laminae dry wts.xlsx") %>%
   clean_names() %>%
   dplyr::rename(laminae_sample_weight = dry_wt_lam_ion) %>% 
   select(code, laminae_sample_weight)
-chloride_data_harv_lam <- left_join(chloride_data_harv, raw_laminae, by="code")
+chloride_data_harv_lam <- left_join(chloride_data_harv, raw_laminae, by = "code")
 chloride_data_harv_lam$laminae_sample_weight <- as.numeric(as.character(chloride_data_harv_lam$laminae_sample_weight))
 
 
@@ -1010,5 +1010,25 @@ chloride_data_harv_lam_mean <- chloride_data_harv_lam %>%
   mutate("cl_dry_weight_calc_mean" = rowMeans(select(chloride_1_data, cl_dry_weight_calc_rep1, cl_dry_weight_calc_rep2))) %>% 
   select(-c(vial_number_1, vial_number_2, cl_sample_weight_mg_rep1,cl_sample_weight_mg_rep2, cl_read_rep1, cl_read_rep2, cl_read_adj_rep1, cl_read_adj_rep2, cl_dry_weight_calc_rep1, cl_dry_weight_calc_rep2))
 
+##tidy data with replicates - not working yet
+
+tidy_temp1 <- chloride_data_harv_lam %>% 
+  gather(key = "tech_rep_a", value = "cl_reading_adj", cl_read_adj_rep1, cl_read_adj_rep2, na.rm = FALSE) %>% 
+  select(code, tech_rep_a, cl_reading_adj)
+tidy_temp2 <- full_join(chloride_data_harv_lam, tidy_temp1, by = "code")
+
+tidy_temp3 <- tidy_temp2 %>% 
+  gather(key = "tech_rep_b", value = "cl_sampling_weight_mg", cl_sample_weight_mg_rep1, cl_sample_weight_mg_rep2, na.rm = FALSE) %>% 
+  select(code, tech_rep_b, cl_sampling_weight_mg)
+tidy_temp4 <- full_join(tidy_temp2, tidy_temp3, by = "code")
 
 
+view(tidy_temp4) ###this is not working - still duplicating 
+
+
+#gather 1 variable
+#select this variable
+#join it onto exisiting data frame
+
+#rinse and repeat with other variables
+#add a tech_rep column
