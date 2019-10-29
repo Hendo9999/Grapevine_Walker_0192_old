@@ -954,3 +954,34 @@ raw_r3b5 <- read_xlsx("Data/3&4. 0192 barcodes (LAM)-BIOMASS.REP3.DB_SH.xlsx", s
   mutate("cl_%_dry_weight_rep1" = (cl_rep1_reading_adj * cf_r3b5[1,1] * 35.5) / (as.numeric(cl_rep1_wt_mg) * 10),
          "cl_%_dry_weight_rep2" = (cl_rep2_reading_adj * cf_r3b5[1,1] * 35.5) / (as.numeric(cl_rep2_wt_mg) * 10))
 raw_r3b5$rep_batch="r3b5" #add assay batch info
+
+
+#joining data together
+
+dfs <- list(raw_r1b1, raw_r1b2, raw_r1b3, raw_r1b4, raw_r1b5, raw_r1b6, 
+            raw_r2b1, raw_r2b2, raw_r2b3, raw_r2b4, raw_r2b5, raw_r2b6,
+            raw_r3b1, raw_r3b2, raw_r3b3, raw_r3b4, raw_r3b5)#list of dataframes with raw data
+chloride_dfs <- join_all(dfs, type = "full") #join dataframes together 
+
+
+#renaming columns in combined dataframe
+chloride_1_data <- chloride_dfs %>%
+  dplyr::rename(treatment_heat = treat_1_h, treatment_salt = treat_2_s, 
+                cl_sample_weight_mg_rep1 = cl_rep1_wt_mg, cl_read_rep1 = cl_rep1_reading,
+                cl_sample_weight_mg_rep2 = cl_rep2_wt_mg, cl_read_rep2 = cl_rep_2_reading,
+                cl_read_adj_rep1 = cl_rep1_reading_adj, cl_read_adj_rep2 = cl_rep2_reading_adj,
+                cl_dry_weight_calc_rep1 = "cl_%_dry_weight_rep1", cl_dry_weight_calc_rep2 = "cl_%_dry_weight_rep2") #rename columns with variant names, need to force through dplyr because of plyr issue
+
+
+#changing treatment value names
+chloride_1_data$treatment_salt[is.na(chloride_1_data$treatment_salt)] <- "No_salt"
+chloride_1_data$treatment_heat[str_detect(chloride_1_data$treatment_heat, "CONT.")] <- "No_heat"
+chloride_1_data$treatment_heat[str_detect(chloride_1_data$treatment_heat, "HEAT")] <- "Heat"
+
+#changing some renamed columns to numerical data
+chloride_1_data$cl_sample_weight_mg_rep1 <- as.numeric(as.character(chloride_1_data$cl_sample_weight_mg_rep1))
+chloride_1_data$cl_sample_weight_mg_rep2 <- as.numeric(as.character(chloride_1_data$cl_sample_weight_mg_rep2))
+chloride_1_data$cl_read_rep1 <- as.numeric(as.character(chloride_1_data$cl_read_rep1))
+chloride_1_data$cl_read_rep2 <- as.numeric(as.character(chloride_1_data$cl_read_rep2))          
+
+
