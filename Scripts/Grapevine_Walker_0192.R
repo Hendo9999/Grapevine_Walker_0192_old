@@ -1041,8 +1041,8 @@ tidy_temp5 <- chloride_data_harv_lam %>%
 tidy_temp6 <- left_join(tidy_temp_base, tidy_temp4, by = "code")
 
 
-
-
+view(tidy_temp4)
+distinct(tidy_temp4)
 
 glimpse(tidy_temp_base)
 glimpse(tidy_temp1)
