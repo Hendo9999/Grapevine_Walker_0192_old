@@ -1002,7 +1002,7 @@ chloride_data_harv_lam <- left_join(chloride_data_harv, raw_laminae, by = "code"
 chloride_data_harv_lam$laminae_sample_weight <- as.numeric(as.character(chloride_data_harv_lam$laminae_sample_weight))
 
 
-##Dataframe with means of technical replicate measurements (dataframe is tidy)
+##Dataframe with means of technical replicate measurements (dataframe is tidy but have lost replicate info which sucks!)
 
 chloride_data_harv_lam_mean <- chloride_data_harv_lam %>% 
   mutate("cl_reading_adj_mean" = rowMeans(select(chloride_1_data, cl_read_adj_rep1, cl_read_adj_rep2))) %>% 
@@ -1010,25 +1010,58 @@ chloride_data_harv_lam_mean <- chloride_data_harv_lam %>%
   mutate("cl_dry_weight_calc_mean" = rowMeans(select(chloride_1_data, cl_dry_weight_calc_rep1, cl_dry_weight_calc_rep2))) %>% 
   select(-c(vial_number_1, vial_number_2, cl_sample_weight_mg_rep1,cl_sample_weight_mg_rep2, cl_read_rep1, cl_read_rep2, cl_read_adj_rep1, cl_read_adj_rep2, cl_dry_weight_calc_rep1, cl_dry_weight_calc_rep2))
 
-##tidy data with replicates - not working yet
+
+
+
+
+
+#########tidy data with replicates - not working yet
+
+#base df to which I will sequentially add individually gathered columns or at least that's the theory!
+tidy_temp_base <- chloride_data_harv_lam %>% 
+  select(-c(cl_read_rep1, cl_read_rep2, vial_number_1, vial_number_2, cl_read_adj_rep1, cl_read_adj_rep2, cl_dry_weight_calc_rep1, cl_dry_weight_calc_rep2)) %>%
+  gather(key = "tech_rep", value = "sample_weight_mg", cl_sample_weight_mg_rep1, cl_sample_weight_mg_rep2, na.rm = FALSE)
+
 
 tidy_temp1 <- chloride_data_harv_lam %>% 
-  gather(key = "tech_rep_a", value = "cl_reading_adj", cl_read_adj_rep1, cl_read_adj_rep2, na.rm = FALSE) %>% 
-  select(code, tech_rep_a, cl_reading_adj)
-tidy_temp2 <- full_join(chloride_data_harv_lam, tidy_temp1, by = "code")
-
-tidy_temp3 <- tidy_temp2 %>% 
-  gather(key = "tech_rep_b", value = "cl_sampling_weight_mg", cl_sample_weight_mg_rep1, cl_sample_weight_mg_rep2, na.rm = FALSE) %>% 
-  select(code, tech_rep_b, cl_sampling_weight_mg)
-tidy_temp4 <- full_join(tidy_temp2, tidy_temp3, by = "code")
+  gather(key = "cl_read_rep", value = "cl_read", cl_read_rep1, cl_read_rep2, na.rm = FALSE) %>% 
+  select(code, cl_read_rep, cl_read)
+tidy_temp2 <- left_join(tidy_temp_base, tidy_temp1, by = "code")
 
 
-view(tidy_temp4) ###this is not working - still duplicating 
+tidy_temp3 <- chloride_data_harv_lam %>% 
+  gather(key = "vial_number_rep", value = "vial_number", vial_number_1, vial_number_2, na.rm = FALSE) %>% 
+  select(code, vial_number_rep, vial_number)
+tidy_temp4 <- left_join(tidy_temp_base, tidy_temp2, by = "code")
 
 
-#gather 1 variable
+tidy_temp5 <- chloride_data_harv_lam %>% 
+  gather(key = "cl_reading_adj_rep", value = "cl_reading_adj", cl_read_adj_rep1, cl_read_adj_rep2, na.rm = FALSE) %>% 
+  select(code, cl_reading_adj_rep, cl_reading_adj)
+tidy_temp6 <- left_join(tidy_temp_base, tidy_temp4, by = "code")
+
+
+
+
+
+glimpse(tidy_temp_base)
+glimpse(tidy_temp1)
+glimpse(tidy_temp2)
+glimpse(tidy_temp3)
+glimpse(tidy_temp4)
+glimpse(tidy_temp5)
+glimpse(tidy_temp6)
+
+
+
+#########this is still not working - still duplicating in weird and wonderful ways....grrrrr
+
+
+
+#can I gather 1 variable
 #select this variable
-#join it onto exisiting data frame
+#join it onto exisiting data frame?
 
 #rinse and repeat with other variables
 #add a tech_rep column
+#will this do the same thing?
